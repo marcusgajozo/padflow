@@ -1,16 +1,4 @@
 {
-  "compilerOptions": {
-    /* Alias Configuration */
-    "baseUrl": ".",
-    "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@/audios": [
-        "./src/assets/audios/*"
-      ],
-    }
-  },
   "files": [],
   "references": [
     {
