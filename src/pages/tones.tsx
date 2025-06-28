@@ -1,7 +1,6 @@
 import { ToneCard } from "@/components/molecules/tone-card";
 import { CardGrid } from "@/components/organisms/card-grid";
 import { padsContinuos } from "@/lib/constants/pads";
-import { useToneManager } from "@/lib/hooks/use-tone-manager";
 import { useToneStore } from "@/lib/stores/use-tone-store";
 
 type PadKey = keyof typeof padsContinuos;
@@ -11,10 +10,6 @@ const MUSICAL_KEYS = Object.entries(padsContinuos).map(([key]) => key);
 export function Tones() {
   const setActiveTone = useToneStore((state) => state.setActiveTone);
   const activeTone = useToneStore((state) => state.activeTone);
-
-  useToneManager({
-    activeTone,
-  });
 
   const handleToneToggle = (tone: PadKey) => {
     setActiveTone(activeTone === tone ? undefined : tone);
