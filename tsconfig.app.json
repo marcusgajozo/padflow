@@ -30,7 +30,7 @@
       "@/*": [
         "src/*"
       ],
-      "@/audios/*": [
+      "@audios/*": [
         "src/assets/audios/*"
       ],
     }

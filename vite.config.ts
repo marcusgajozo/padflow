@@ -9,7 +9,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      "@/audios": path.resolve(__dirname, "./src/assets/audios"),
+      "@audios": path.resolve(__dirname, "./src/assets/audios"),
     },
   },
 });
