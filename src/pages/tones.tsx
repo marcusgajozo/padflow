@@ -1,27 +1,23 @@
-import { useState } from "react";
-import { CardGrid } from "@/components/organisms/card-grid";
 import { ToneCard } from "@/components/molecules/tone-card";
+import { CardGrid } from "@/components/organisms/card-grid";
+import { padsContinuos } from "@/lib/constants/pads";
+import { useToneManager } from "@/lib/hooks/use-tone-manager";
+import { useToneStore } from "@/lib/stores/use-tone-store";
 
-const MUSICAL_KEYS = [
-  "C",
-  "C#",
-  "D",
-  "D#",
-  "E",
-  "F",
-  "F#",
-  "G",
-  "G#",
-  "A",
-  "A#",
-  "B",
-];
+type PadKey = keyof typeof padsContinuos;
+
+const MUSICAL_KEYS = Object.entries(padsContinuos).map(([key]) => key);
 
 export function Tones() {
-  const [activeTone, setActiveTone] = useState<string | null>(null);
+  const setActiveTone = useToneStore((state) => state.setActiveTone);
+  const activeTone = useToneStore((state) => state.activeTone);
 
-  const handleToneClick = (tone: string) => {
-    setActiveTone(activeTone === tone ? null : tone);
+  useToneManager({
+    activeTone,
+  });
+
+  const handleToneToggle = (tone: PadKey) => {
+    setActiveTone(activeTone === tone ? undefined : tone);
   };
 
   return (
@@ -36,12 +32,12 @@ export function Tones() {
       </div>
 
       <CardGrid>
-        {MUSICAL_KEYS.map((tone) => (
+        {MUSICAL_KEYS.map((tone, index) => (
           <ToneCard
-            key={tone}
-            tone={tone}
+            key={`tone-${tone}-${index}`}
+            tone={tone as PadKey}
             active={activeTone === tone}
-            onClick={() => handleToneClick(tone)}
+            onToneToggle={() => handleToneToggle(tone as PadKey)}
           />
         ))}
       </CardGrid>
