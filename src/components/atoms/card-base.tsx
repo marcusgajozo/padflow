@@ -1,9 +1,6 @@
-import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 interface CardBaseProps {
-  children: ReactNode;
-  className?: string;
   onClick?: () => void;
   active?: boolean;
   variant?: "default" | "add" | "empty";
@@ -15,7 +12,7 @@ export function CardBase({
   onClick,
   active = false,
   variant = "default",
-}: CardBaseProps) {
+}: CardBaseProps & React.HTMLAttributes<HTMLDivElement>) {
   const baseStyles =
     "rounded-2xl transition-all duration-200 cursor-pointer select-none min-h-[120px] flex items-center justify-center relative overflow-hidden";
 
