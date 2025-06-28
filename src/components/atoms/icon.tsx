@@ -7,7 +7,7 @@ interface IconProps {
   className?: string;
 }
 
-export default function Icon({
+export function Icon({
   icon: IconComponent,
   size = "md",
   className,

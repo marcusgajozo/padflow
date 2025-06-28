@@ -9,7 +9,7 @@ interface CardBaseProps {
   variant?: "default" | "add" | "empty";
 }
 
-export default function CardBase({
+export function CardBase({
   children,
   className,
   onClick,
