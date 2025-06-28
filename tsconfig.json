@@ -1,7 +1,23 @@
 {
+  "compilerOptions": {
+    /* Alias Configuration */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@/audios": [
+        "./src/assets/audios/*"
+      ],
+    }
+  },
   "files": [],
   "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ]
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ],
 }
