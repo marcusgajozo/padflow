@@ -1,53 +1,28 @@
-import { useState, useRef } from "react";
-import { CardGrid } from "@/components/organisms/card-grid";
-import { EffectCard } from "@/components/molecules/effect-card";
 import { AddPadButton } from "@/components/molecules/add-pad-button";
-
-interface EffectPad {
-  id: string;
-  audioFile?: File;
-}
+import { EffectCard } from "@/components/molecules/effect-card";
+import { CardGrid } from "@/components/organisms/card-grid";
+import { useEffectStore } from "@/lib/stores/use-effect-store";
+import { useEffect } from "react";
 
 export function Effects() {
-  const [effectPads, setEffectPads] = useState<EffectPad[]>([]);
-  const audioRefs = useRef<{ [key: string]: HTMLAudioElement }>({});
+  const effectPads = useEffectStore((state) => state.effectPads);
+  const addNewPad = useEffectStore((state) => state.addNewPad);
+  const initializePads = useEffectStore((state) => state.initializePads);
+  const isInitialized = useEffectStore((state) => state.isInitialized);
 
-  const addNewPad = () => {
-    const newPad: EffectPad = {
-      id: `pad-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-    };
-    setEffectPads((prev) => [...prev, newPad]);
-  };
-
-  const handleFileUpload = (id: string, file: File) => {
-    setEffectPads((prev) =>
-      prev.map((pad) => (pad.id === id ? { ...pad, audioFile: file } : pad))
-    );
-
-    // Create audio element for this file
-    const audioUrl = URL.createObjectURL(file);
-    const audio = new Audio(audioUrl);
-    audioRefs.current[id] = audio;
-  };
-
-  const handleDelete = (id: string) => {
-    setEffectPads((prev) => prev.filter((pad) => pad.id !== id));
-
-    // Clean up audio reference
-    if (audioRefs.current[id]) {
-      audioRefs.current[id].pause();
-      URL.revokeObjectURL(audioRefs.current[id].src);
-      delete audioRefs.current[id];
+  useEffect(() => {
+    if (!isInitialized) {
+      initializePads();
     }
+  }, [isInitialized, initializePads]);
+
+  const handleFileSelected = (file: File) => {
+    addNewPad(file);
   };
 
-  const handlePlay = (id: string) => {
-    const audio = audioRefs.current[id];
-    if (audio) {
-      audio.currentTime = 0;
-      audio.play().catch(console.error);
-    }
-  };
+  if (!isInitialized) {
+    return <div>Carregando pads...</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -62,16 +37,9 @@ export function Effects() {
 
       <CardGrid>
         {effectPads.map((pad) => (
-          <EffectCard
-            key={pad.id}
-            id={pad.id}
-            audioFile={pad.audioFile}
-            onFileUpload={handleFileUpload}
-            onDelete={handleDelete}
-            onPlay={handlePlay}
-          />
+          <EffectCard key={pad.id} audioFile={pad.audioFile} name={pad.name} />
         ))}
-        <AddPadButton onClick={addNewPad} />
+        <AddPadButton onFileSelected={handleFileSelected} />
       </CardGrid>
     </div>
   );
