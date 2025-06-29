@@ -36,7 +36,13 @@ export function Button({
 
   return (
     <button
-      className={cn(baseStyles, variants[variant], sizes[size], className)}
+      className={cn(
+        baseStyles,
+        variants[variant],
+        sizes[size],
+        className,
+        "cursor-pointer"
+      )}
       {...props}
     >
       {children}

@@ -1,6 +1,8 @@
 import { ToneCard } from "@/components/molecules/tone-card";
 import { CardGrid } from "@/components/organisms/card-grid";
 import { padsContinuos } from "@/lib/constants/pads";
+import { useSendRemoteCommands } from "@/lib/hooks/use-send-remote-command";
+import { useRemoteStore } from "@/lib/stores/use-remote-store";
 import { useToneStore } from "@/lib/stores/use-tone-store";
 
 type PadKey = keyof typeof padsContinuos;
@@ -10,8 +12,15 @@ const MUSICAL_KEYS = Object.entries(padsContinuos).map(([key]) => key);
 export function Tones() {
   const setActiveTone = useToneStore((state) => state.setActiveTone);
   const activeTone = useToneStore((state) => state.activeTone);
+  const isRemoteControl = useRemoteStore((state) => state.isRemoteControl);
+
+  const { sendAction } = useSendRemoteCommands();
 
   const handleToneToggle = (tone: PadKey) => {
+    if (isRemoteControl) {
+      sendAction(tone);
+      return;
+    }
     setActiveTone(activeTone === tone ? undefined : tone);
   };
 
