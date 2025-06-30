@@ -1,19 +1,21 @@
+import { useEffectStore } from "@/lib/stores/use-effect-store";
+import { useRemoteStore } from "@/lib/stores/use-remote-store";
 import { useToneStore } from "@/lib/stores/use-tone-store";
 import { supabase } from "@/lib/supabase-client";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { useEffect, useRef } from "react";
 import { useSearchParams } from "react-router";
-import { useRemoteStore } from "../stores/use-remote-store";
 
-interface RemoteControlManagerProps {
+interface RemoteControlManagerProviderProps {
   children?: React.ReactNode;
 }
 
 export function RemoteControlManagerProvider({
   children,
-}: RemoteControlManagerProps) {
+}: RemoteControlManagerProviderProps) {
   const isRemoteActive = useRemoteStore((state) => state.isRemoteActive);
   const setRoomId = useRemoteStore((state) => state.setRoomId);
+  const effectPads = useEffectStore((state) => state.effectPads);
 
   const setIsRemoteControl = useRemoteStore(
     (state) => state.setIsRemoteControl
@@ -30,9 +32,9 @@ export function RemoteControlManagerProvider({
 
   const channelRef = useRef<RealtimeChannel | null>(null);
 
-  const { setActiveTone } = useToneStore();
+  const setActiveTone = useToneStore((state) => state.setActiveTone);
+  const setActiveEffect = useEffectStore((state) => state.setActiveEffect);
 
-  // configuration for host
   useEffect(() => {
     if (!isRemoteActive) return;
 
@@ -48,6 +50,10 @@ export function RemoteControlManagerProvider({
 
         if (payload.action === "SET_ACTIVE_TONE") {
           setActiveTone(payload.key);
+        }
+
+        if (payload.action === "PLAY_EFFECT") {
+          setActiveEffect(payload.effectId);
         }
       })
       .on("presence", { event: "join" }, () => {
@@ -74,8 +80,10 @@ export function RemoteControlManagerProvider({
     };
   }, [
     decrementControllers,
+    effectPads,
     incrementControllers,
     isRemoteActive,
+    setActiveEffect,
     setActiveTone,
     setRoomId,
   ]);

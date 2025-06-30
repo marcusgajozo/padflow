@@ -1,17 +1,16 @@
 import { padsContinuos } from "@/lib/constants/pads";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Player } from "tone";
+import { useToneStore } from "../stores/use-tone-store";
 
-type PadKey = keyof typeof padsContinuos;
-
-interface ToneManagerProps {
-  activeTone?: PadKey;
+interface ToneManagerProviderProps {
+  children?: React.ReactNode;
 }
 
-export function useToneManager({ activeTone }: ToneManagerProps) {
+export function ToneManagerProvider({ children }: ToneManagerProviderProps) {
+  const activeTone = useToneStore((state) => state.activeTone);
   const playerRef = useRef<Player | null>(null);
   const loadedUrlRef = useRef<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     console.log("🔊 Inicializando um único Tone.Player...");
@@ -52,7 +51,6 @@ export function useToneManager({ activeTone }: ToneManagerProps) {
 
       try {
         console.log(`⏳ Carregando o tom: ${activeTone}...`);
-        setIsLoading(true);
 
         await player.load(audioUrl);
 
@@ -62,13 +60,11 @@ export function useToneManager({ activeTone }: ToneManagerProps) {
         player.start();
       } catch (error) {
         console.error(`❌ Erro ao carregar o tom ${activeTone}:`, error);
-      } finally {
-        setIsLoading(false);
       }
     };
 
     manageAudio();
   }, [activeTone]);
 
-  return { isLoading };
+  return children;
 }

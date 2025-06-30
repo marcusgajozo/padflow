@@ -2,27 +2,19 @@ import { AddPadButton } from "@/components/molecules/add-pad-button";
 import { EffectCard } from "@/components/molecules/effect-card";
 import { CardGrid } from "@/components/organisms/card-grid";
 import { useEffectStore } from "@/lib/stores/use-effect-store";
-import { useEffect } from "react";
 
 export function Effects() {
   const effectPads = useEffectStore((state) => state.effectPads);
   const addNewPad = useEffectStore((state) => state.addNewPad);
-  const initializePads = useEffectStore((state) => state.initializePads);
-  const isInitialized = useEffectStore((state) => state.isInitialized);
-
-  useEffect(() => {
-    if (!isInitialized) {
-      initializePads();
-    }
-  }, [isInitialized, initializePads]);
+  const setActiveEffect = useEffectStore((state) => state.setActiveEffect);
 
   const handleFileSelected = (file: File) => {
     addNewPad(file);
   };
 
-  if (!isInitialized) {
-    return <div>Carregando pads...</div>;
-  }
+  const handlePlayEffect = (effectId: string) => {
+    setActiveEffect(effectId);
+  };
 
   return (
     <div className="space-y-6">
@@ -36,8 +28,12 @@ export function Effects() {
       </div>
 
       <CardGrid>
-        {effectPads.map((pad) => (
-          <EffectCard key={pad.id} audioFile={pad.audioFile} name={pad.name} />
+        {effectPads.map((effect) => (
+          <EffectCard
+            key={effect.id}
+            onPlayEfeect={() => handlePlayEffect(effect.id)}
+            name={effect.name}
+          />
         ))}
         <AddPadButton onFileSelected={handleFileSelected} />
       </CardGrid>
