@@ -1,9 +1,9 @@
-import { useEffectStore } from "@/lib/stores/use-effect-store";
-import { useRemoteStore } from "@/lib/stores/use-remote-store";
+import { RemoteControlManagerContext } from "@/lib/context/remote-control-manager-context";
+import { useEffectManager } from "@/lib/hooks/use-effect-manager";
 import { useToneStore } from "@/lib/stores/use-tone-store";
 import { supabase } from "@/lib/supabase-client";
 import type { RealtimeChannel } from "@supabase/supabase-js";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
 
 interface RemoteControlManagerProviderProps {
@@ -13,19 +13,9 @@ interface RemoteControlManagerProviderProps {
 export function RemoteControlManagerProvider({
   children,
 }: RemoteControlManagerProviderProps) {
-  const isRemoteActive = useRemoteStore((state) => state.isRemoteActive);
-  const setRoomId = useRemoteStore((state) => state.setRoomId);
-  const effectPads = useEffectStore((state) => state.effectPads);
-
-  const setIsRemoteControl = useRemoteStore(
-    (state) => state.setIsRemoteControl
-  );
-  const incrementControllers = useRemoteStore(
-    (state) => state.incrementControllers
-  );
-  const decrementControllers = useRemoteStore(
-    (state) => state.decrementControllers
-  );
+  const [isRemoteActive, setIsRemoteActive] = useState(false);
+  const [isRemoteControl, setIsRemoteControl] = useState(false);
+  const [quatityControllers, setQuantityControllers] = useState(0);
 
   const [searchParams] = useSearchParams();
   const roomIdParams = searchParams.get("session");
@@ -33,13 +23,12 @@ export function RemoteControlManagerProvider({
   const channelRef = useRef<RealtimeChannel | null>(null);
 
   const setActiveTone = useToneStore((state) => state.setActiveTone);
-  const setActiveEffect = useEffectStore((state) => state.setActiveEffect);
+  const { play: playEffect } = useEffectManager();
 
   useEffect(() => {
     if (!isRemoteActive) return;
 
     const roomId = `padflow-${Math.random().toString(36).slice(2, 8)}`;
-    setRoomId(roomId);
 
     const channel = supabase.channel(roomId);
     channelRef.current = channel;
@@ -53,16 +42,16 @@ export function RemoteControlManagerProvider({
         }
 
         if (payload.action === "PLAY_EFFECT") {
-          setActiveEffect(payload.effectId);
+          playEffect(payload.effectId);
         }
       })
       .on("presence", { event: "join" }, () => {
         console.log("🎮 Controle conectado!");
-        incrementControllers();
+        setQuantityControllers((prev) => prev + 1);
       })
       .on("presence", { event: "leave" }, () => {
         console.log("🔌 Controle desconectado.");
-        decrementControllers();
+        setQuantityControllers((prev) => prev - 1);
       })
       .subscribe((status) => {
         if (status === "SUBSCRIBED") {
@@ -78,22 +67,45 @@ export function RemoteControlManagerProvider({
         console.log(`🚪 Canal ${roomId} fechado.`);
       }
     };
-  }, [
-    decrementControllers,
-    effectPads,
-    incrementControllers,
-    isRemoteActive,
-    setActiveEffect,
-    setActiveTone,
-    setRoomId,
-  ]);
+  }, [isRemoteActive, playEffect, setActiveTone]);
 
   useEffect(() => {
     if (!roomIdParams) return;
 
-    setIsRemoteControl(true);
-    setRoomId(roomIdParams);
-  }, [roomIdParams, setIsRemoteControl, setRoomId]);
+    const channel = supabase.channel(roomIdParams);
+    channelRef.current = channel;
 
-  return children;
+    channel.subscribe((status) => {
+      if (status === "SUBSCRIBED") {
+        channel.track({ user: "controller" });
+        console.log(`📲 Controle conectado ao canal: ${roomIdParams}`);
+      }
+    });
+
+    setIsRemoteControl(true);
+
+    return () => {
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+      }
+    };
+  }, [roomIdParams]);
+
+  const toggleRemoteActiveControl = () => {
+    if (isRemoteControl) return;
+    setIsRemoteActive((prev) => !prev);
+  };
+
+  return (
+    <RemoteControlManagerContext.Provider
+      value={{
+        channelRef,
+        toggleRemoteActiveControl,
+        isRemoteControl,
+        quatityControllers,
+      }}
+    >
+      {children}
+    </RemoteControlManagerContext.Provider>
+  );
 }
