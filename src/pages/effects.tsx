@@ -1,19 +1,20 @@
 import { AddPadButton } from "@/components/molecules/add-pad-button";
 import { EffectCard } from "@/components/molecules/effect-card";
 import { CardGrid } from "@/components/organisms/card-grid";
+import { useEffectManager } from "@/lib/hooks/use-effect-manager";
 import { useEffectStore } from "@/lib/stores/use-effect-store";
 
 export function Effects() {
   const effectPads = useEffectStore((state) => state.effectPads);
   const addNewPad = useEffectStore((state) => state.addNewPad);
-  const setActiveEffect = useEffectStore((state) => state.setActiveEffect);
+  const { play: playEffect } = useEffectManager();
 
   const handleFileSelected = (file: File) => {
     addNewPad(file);
   };
 
   const handlePlayEffect = (effectId: string) => {
-    setActiveEffect(effectId);
+    playEffect(effectId);
   };
 
   return (

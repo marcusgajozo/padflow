@@ -9,7 +9,6 @@ export interface EffectPad {
 }
 
 interface EffectStoreState {
-  activeEffectFile: File | null;
   effectPads: EffectPad[];
   isInitialized: boolean;
 }
@@ -22,7 +21,6 @@ interface EffectStoreActions {
 }
 
 const INITIAL_EFFECT: EffectStoreState = {
-  activeEffectFile: null,
   isInitialized: false,
   effectPads: [],
 };
@@ -68,13 +66,6 @@ export const useEffectStore = create<EffectStoreState & EffectStoreActions>()(
         setState((state) => ({
           effectPads: state.effectPads.filter((pad) => pad.id !== id),
         }));
-      },
-
-      setActiveEffect: async (effectId) => {
-        const effect = await get<EffectPad>(effectId);
-        if (effect) {
-          setState({ activeEffectFile: effect.audioFile });
-        }
       },
     }),
     { name: "effect-store" }
