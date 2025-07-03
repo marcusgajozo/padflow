@@ -146,7 +146,7 @@ export function RemoteHostProvider({
       type: "broadcast",
       event: TYPES_EVENTS_CHANNEL.TONE_IS_LOADING,
       payload: {
-        toneIsloagind: tonesIsloading,
+        tonesIsloading,
       },
     });
   }, [channelHost, isRemoteHost, tonesIsloading]);
