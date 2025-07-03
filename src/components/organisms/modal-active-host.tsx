@@ -16,7 +16,7 @@ export function ModalActiveHost() {
 
   const remoteUrl = `${
     window.location.origin || "http://localhost:5173"
-  }/?session=${roomId}`;
+  }/tones/?session=${roomId}`;
 
   return (
     <Modal.Root

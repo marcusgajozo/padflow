@@ -2,6 +2,7 @@ import { padsContinuos } from "@/lib/constants/pads";
 import { useEffect, useRef } from "react";
 import { Players } from "tone";
 import { useToneStore } from "../stores/use-tone-store";
+import { useRemoteControlStore } from "../stores/use-remote-control-store";
 
 interface ToneManagerProviderProps {
   children?: React.ReactNode;
@@ -10,6 +11,9 @@ interface ToneManagerProviderProps {
 export function ToneManagerProvider({ children }: ToneManagerProviderProps) {
   const tonesIsloading = useToneStore((state) => state.tonesIsloading);
   const playersRef = useRef<Players | null>(null);
+  const isRemoteControl = useRemoteControlStore(
+    (state) => state.isRemoteControl
+  );
 
   const setActiveTone = useToneStore((state) => state.setActiveTone);
   const setPlayTone = useToneStore((state) => state.setPlayTone);
@@ -17,6 +21,7 @@ export function ToneManagerProvider({ children }: ToneManagerProviderProps) {
 
   useEffect(() => {
     console.log("🧹 Criando o players de tons.");
+    if (isRemoteControl) return;
 
     const players = new Players({
       urls: padsContinuos,
@@ -33,7 +38,7 @@ export function ToneManagerProvider({ children }: ToneManagerProviderProps) {
       console.log("🧹 Limpando o players de tons.");
       players.dispose();
     };
-  }, [setTonesIsloading]);
+  }, [isRemoteControl, setTonesIsloading]);
 
   useEffect(() => {
     const players = playersRef.current;
