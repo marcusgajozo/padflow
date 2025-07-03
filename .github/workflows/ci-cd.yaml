@@ -29,10 +29,15 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build Docker image and Push Docker image
-        run: |
-          docker buildx build \
-            --platform linux/arm64 \
-            --cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:cache \
-            --cache-to=type=inline \
-            -t ghcr.io/${{ github.repository }}:${{ github.ref_name }} \
-            --push .
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64 
+          push: true
+          tags: ghcr.io/${{ github.repository }}:${{ github.ref_name }}
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:buildcache
+          cache-to: type=registry,ref=ghcr.io/${{ github.repository }}:buildcache,mode=max
+          build-args: |
+            VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL }}
+            VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }}
+            VITE_DOMIN_URL=${{ secrets.VITE_DOMIN_URL }}
