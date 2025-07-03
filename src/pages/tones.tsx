@@ -5,6 +5,7 @@ import { TYPES_EVENTS_CHANNEL } from "@/lib/constants/channel";
 import { padsContinuos } from "@/lib/constants/pads";
 import { useRemoteControlStore } from "@/lib/stores/use-remote-control-store";
 import { useToneStore } from "@/lib/stores/use-tone-store";
+import { Fragment } from "react/jsx-runtime";
 
 type PadKey = keyof typeof padsContinuos;
 
@@ -23,6 +24,7 @@ export function Tones() {
 
   const handleToneToggle = (tone: PadKey) => {
     if (isRemoteControl && channelControl) {
+      console.log(`🔊 Enviando o tom ${tone} para o canal de controle remoto.`);
       channelControl.send({
         type: "broadcast",
         event: TYPES_EVENTS_CHANNEL.PLAY_TONE,
@@ -46,17 +48,16 @@ export function Tones() {
 
       <CardGrid>
         {MUSICAL_KEYS.map((tone, index) => (
-          <>
+          <Fragment key={`tone-${tone}-${index}`}>
             {tonesIsloading && <CardBaseSkeleton className="aspect-square" />}
             {!tonesIsloading && (
               <ToneCard
-                key={`tone-${tone}-${index}`}
                 tone={tone as PadKey}
                 active={activeTone === tone}
                 onToneToggle={() => handleToneToggle(tone as PadKey)}
               />
             )}
-          </>
+          </Fragment>
         ))}
       </CardGrid>
     </div>

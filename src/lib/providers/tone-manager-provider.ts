@@ -37,8 +37,9 @@ export function ToneManagerProvider({ children }: ToneManagerProviderProps) {
 
   useEffect(() => {
     const players = playersRef.current;
-    if (!players || !tonesIsloading) return;
+    if (!players) return;
 
+    console.log("🔊 entrei som carregado", tonesIsloading);
     setPlayTone((tone) => {
       setActiveTone(tone);
       const player = players.player(tone);

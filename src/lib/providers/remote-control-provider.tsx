@@ -53,6 +53,7 @@ export function RemoteControlProvider({
         console.log(`✅ Controle remoto conectado ao canal: ${roomId}`);
         channel.track({ user: "controller" });
         setIsRemoteControl(true);
+        setTonesIsloading(false);
       }
     });
 
@@ -61,7 +62,7 @@ export function RemoteControlProvider({
       supabase.removeChannel(channel);
       setChannelControl(null);
     };
-  }, [roomId, setChannelControl, setIsRemoteControl]);
+  }, [roomId, setChannelControl, setIsRemoteControl, setTonesIsloading]);
 
   useEffect(() => {
     if (!channelControl || !isRemoteControl) return;

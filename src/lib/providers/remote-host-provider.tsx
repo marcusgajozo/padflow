@@ -80,7 +80,10 @@ export function RemoteHostProvider({
       .on(
         "broadcast",
         { event: TYPES_EVENTS_CHANNEL.PLAY_TONE },
-        ({ payload }) => playTone?.(payload.key)
+        ({ payload }) => {
+          console.log(`🔊 Controle mandou tocar o tom: ${payload.key}`);
+          playTone?.(payload.key);
+        }
       )
       .on(
         "broadcast",
