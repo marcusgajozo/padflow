@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ github.ref_name }} # Exporta a tag da imagem para o próximo job
 
     steps:
       # Checkout do código
@@ -43,3 +45,20 @@ jobs:
             VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }}
           cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:buildcache
           cache-to: type=registry,ref=ghcr.io/${{ github.repository }}:buildcache,mode=max
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to server via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo ${{ secrets.PADFLOW_PACKAGES }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            cd projects/padflow/
+            docker pull ghcr.io/${{ github.repository }}:${{ needs.build.outputs.image_tag }}
+            docker-compose up -d
