@@ -61,4 +61,4 @@ jobs:
             echo ${{ secrets.PADFLOW_PACKAGES }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             cd projects/padflow/
             docker pull ghcr.io/${{ github.repository }}:${{ needs.build.outputs.image_tag }}
-            docker-compose up -d
+            docker compose up -d
