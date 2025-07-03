@@ -1,0 +1,33 @@
+import type { RealtimeChannel } from "@supabase/supabase-js";
+import { create } from "zustand";
+
+interface RemoteControlStoreState {
+  isRemoteControl: boolean;
+  roomId: string | null;
+  channelControl: RealtimeChannel | null;
+}
+
+interface RemoteControlStoreActions {
+  setIsRemoteControl: (
+    isRemoteControl: RemoteControlStoreState["isRemoteControl"]
+  ) => void;
+  setRoomId: (roomId: RemoteControlStoreState["roomId"]) => void;
+  setChannelControl: (
+    channelControl: RemoteControlStoreState["channelControl"]
+  ) => void;
+}
+
+const INITIAL_STATE: RemoteControlStoreState = {
+  isRemoteControl: false,
+  roomId: null,
+  channelControl: null,
+};
+
+export const useRemoteControlStore = create<
+  RemoteControlStoreState & RemoteControlStoreActions
+>((set) => ({
+  ...INITIAL_STATE,
+  setIsRemoteControl: (isRemoteControl) => set(() => ({ isRemoteControl })),
+  setRoomId: (roomId) => set(() => ({ roomId: roomId })),
+  setChannelControl: (channelControl) => set(() => ({ channelControl })),
+}));

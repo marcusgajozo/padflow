@@ -1,0 +1,9 @@
+export const TYPES_EVENTS_CHANNEL = {
+  PLAY_TONE: "PLAY_TONE",
+  TONE_ACTIVE: "TONE_ACTIVE",
+  PLAY_EFFECT: "PLAY_EFFECT",
+  HOST_SYNC_STATE: "host-sync-state",
+  CLIENT_REQUEST_STATE: "client-request-state",
+  JOIN: "JOIN",
+  LEAVE: "LEAVE",
+} as const;

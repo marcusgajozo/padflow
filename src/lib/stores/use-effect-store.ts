@@ -7,22 +7,31 @@ export interface EffectPad {
   name: string;
   audioFile: File;
 }
+interface EffectPadRemote {
+  id: string;
+  name: string;
+}
 
 interface EffectStoreState {
   effectPads: EffectPad[];
+  effectPadsRemote: EffectPadRemote[];
   isInitialized: boolean;
+  playEffect: null | ((effectId: string) => void);
 }
 
 interface EffectStoreActions {
   initializePads: () => Promise<void>;
   addNewPad: (file: File) => Promise<void>;
   handleDelete: (id: string) => Promise<void>;
-  setActiveEffect: (effectId: string) => void;
+  setEffectPadsRemote: (effectPadsRemote: EffectPadRemote[]) => void;
+  setPlayEffect: (playEffect: EffectStoreState["playEffect"]) => void;
 }
 
 const INITIAL_EFFECT: EffectStoreState = {
   isInitialized: false,
   effectPads: [],
+  effectPadsRemote: [],
+  playEffect: null,
 };
 
 export const useEffectStore = create<EffectStoreState & EffectStoreActions>()(
@@ -67,6 +76,14 @@ export const useEffectStore = create<EffectStoreState & EffectStoreActions>()(
           effectPads: state.effectPads.filter((pad) => pad.id !== id),
         }));
       },
+
+      setEffectPadsRemote: (effectPadsRemote) => {
+        setState({
+          effectPadsRemote,
+        });
+      },
+
+      setPlayEffect: (playEffect) => setState({ playEffect }),
     }),
     { name: "effect-store" }
   )

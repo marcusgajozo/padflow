@@ -33,6 +33,9 @@
       "@audios/*": [
         "src/assets/audios/*"
       ],
+      "@components/*": [
+        "src/components/*"
+      ],
     }
   },
   "include": [

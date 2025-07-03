@@ -1,4 +1,3 @@
-import { EffectManagerContext } from "@/lib/context/effect-manager-context";
 import { useEffectStore } from "@/lib/stores/use-effect-store";
 import { useEffect, useRef, type ReactNode } from "react";
 import { Players } from "tone";
@@ -8,8 +7,11 @@ export function EffectManagerProvider({ children }: { children: ReactNode }) {
   const urlMapRef = useRef<Map<string, string>>(new Map());
 
   const effectPads = useEffectStore((state) => state.effectPads);
-  const initializePads = useEffectStore((state) => state.initializePads);
   const isInitialized = useEffectStore((state) => state.isInitialized);
+
+  const setPlayEffect = useEffectStore((state) => state.setPlayEffect);
+
+  const initializePads = useEffectStore((state) => state.initializePads);
 
   useEffect(() => {
     if (!isInitialized) {
@@ -36,32 +38,28 @@ export function EffectManagerProvider({ children }: { children: ReactNode }) {
 
     playersRef.current = newPlayers;
 
+    setPlayEffect((id: string) => {
+      const players = playersRef.current;
+      if (players?.has(id)) {
+        const player = players.player(id);
+        if (player.state === "started") {
+          player.restart();
+        } else {
+          player.start();
+        }
+      } else {
+        console.warn(
+          `Tentativa de tocar um efeito não carregado ou ainda em carregamento: ${id}`
+        );
+      }
+    });
+
     return () => {
       newPlayers.dispose();
       urlMapRef.current.forEach((url) => URL.revokeObjectURL(url));
       urlMapRef.current.clear();
     };
-  }, [effectPads]);
+  }, [effectPads, setPlayEffect]);
 
-  const play = async (id: string) => {
-    const players = playersRef.current;
-    if (players?.has(id)) {
-      const player = players.player(id);
-      if (player.state === "started") {
-        player.restart();
-      } else {
-        player.start();
-      }
-    } else {
-      console.warn(
-        `Tentativa de tocar um efeito não carregado ou ainda em carregamento: ${id}`
-      );
-    }
-  };
-
-  return (
-    <EffectManagerContext.Provider value={{ play }}>
-      {children}
-    </EffectManagerContext.Provider>
-  );
+  return children;
 }
