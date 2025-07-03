@@ -16,10 +16,10 @@ export function RemoteHostProvider({
   const channelHost = useRemoteHostStore((state) => state.channelHost);
   const effectPads = useEffectStore((state) => state.effectPads);
   const activeTone = useToneStore((state) => state.activeTone);
+  const tonesIsloading = useToneStore((state) => state.tonesIsloading);
 
   const setChannelHost = useRemoteHostStore((state) => state.setChannelHost);
   const setRoomId = useRemoteHostStore((state) => state.setRoomId);
-  const setActiveTone = useToneStore((state) => state.setActiveTone);
   const playTone = useToneStore((state) => state.playTone);
 
   const playEffect = useEffectStore((state) => state.playEffect);
@@ -84,6 +84,19 @@ export function RemoteHostProvider({
       )
       .on(
         "broadcast",
+        { event: TYPES_EVENTS_CHANNEL.GET_TONE_IS_LOADING },
+        () => {
+          channelHost.send({
+            type: "broadcast",
+            event: TYPES_EVENTS_CHANNEL.TONE_IS_LOADING,
+            payload: {
+              toneIsloagind: tonesIsloading,
+            },
+          });
+        }
+      )
+      .on(
+        "broadcast",
         { event: TYPES_EVENTS_CHANNEL.CLIENT_REQUEST_STATE },
         () => {
           console.log(
@@ -108,7 +121,7 @@ export function RemoteHostProvider({
     isRemoteHost,
     playEffect,
     playTone,
-    setActiveTone,
+    tonesIsloading,
   ]);
 
   useEffect(() => {
@@ -125,6 +138,18 @@ export function RemoteHostProvider({
       },
     });
   }, [channelHost, effectPads, isRemoteHost]);
+
+  useEffect(() => {
+    if (!channelHost || !isRemoteHost) return;
+
+    channelHost.send({
+      type: "broadcast",
+      event: TYPES_EVENTS_CHANNEL.TONE_IS_LOADING,
+      payload: {
+        toneIsloagind: tonesIsloading,
+      },
+    });
+  }, [channelHost, isRemoteHost, tonesIsloading]);
 
   useEffect(() => {
     if (!channelHost || !isRemoteHost) return;

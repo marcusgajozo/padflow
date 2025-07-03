@@ -47,7 +47,7 @@ export function Tones() {
       <CardGrid>
         {MUSICAL_KEYS.map((tone, index) => (
           <>
-            {tonesIsloading && <CardBaseSkeleton className="h-2 w-50" />}
+            {tonesIsloading && <CardBaseSkeleton className="aspect-square" />}
             {!tonesIsloading && (
               <ToneCard
                 key={`tone-${tone}-${index}`}

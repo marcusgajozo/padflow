@@ -6,4 +6,6 @@ export const TYPES_EVENTS_CHANNEL = {
   CLIENT_REQUEST_STATE: "client-request-state",
   JOIN: "JOIN",
   LEAVE: "LEAVE",
+  TONE_IS_LOADING: "TONE_IS_LOADING",
+  GET_TONE_IS_LOADING: "GET_TONE_IS_LOADING",
 } as const;

@@ -30,6 +30,7 @@ export function RemoteControlProvider({
     (state) => state.setEffectPadsRemote
   );
   const setActiveTone = useToneStore((state) => state.setActiveTone);
+  const setTonesIsloading = useToneStore((state) => state.setTonesIsloading);
 
   const [searchParams] = useSearchParams();
 
@@ -80,8 +81,19 @@ export function RemoteControlProvider({
         "broadcast",
         { event: TYPES_EVENTS_CHANNEL.TONE_ACTIVE },
         ({ payload }) => setActiveTone(payload.key)
+      )
+      .on(
+        "broadcast",
+        { event: TYPES_EVENTS_CHANNEL.TONE_IS_LOADING },
+        ({ payload }) => setTonesIsloading(payload.tonesIsloading)
       );
-  }, [channelControl, isRemoteControl, setActiveTone, setEffectPadsRemote]);
+  }, [
+    channelControl,
+    isRemoteControl,
+    setActiveTone,
+    setEffectPadsRemote,
+    setTonesIsloading,
+  ]);
 
   useEffect(() => {
     if (!channelControl || !isRemoteControl) return;
@@ -90,7 +102,16 @@ export function RemoteControlProvider({
       type: "broadcast",
       event: TYPES_EVENTS_CHANNEL.CLIENT_REQUEST_STATE,
     });
-  }, [channelControl, isRemoteControl, setEffectPadsRemote]);
+  }, [channelControl, isRemoteControl]);
+
+  useEffect(() => {
+    if (!channelControl || !isRemoteControl) return;
+
+    channelControl.send({
+      type: "broadcast",
+      event: TYPES_EVENTS_CHANNEL.CLIENT_REQUEST_STATE,
+    });
+  }, [channelControl, isRemoteControl]);
 
   return children;
 }
