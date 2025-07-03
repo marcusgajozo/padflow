@@ -20,7 +20,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.PADFLOW_PACKAGES }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup QEMU para suporte multi-arquitetura
         uses: docker/setup-qemu-action@v3
