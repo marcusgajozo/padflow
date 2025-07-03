@@ -1,3 +1,4 @@
+import { CardBaseSkeleton } from "@/components/atoms/card-base-skeleton";
 import { ToneCard } from "@/components/molecules/tone-card";
 import { CardGrid } from "@/components/organisms/card-grid";
 import { TYPES_EVENTS_CHANNEL } from "@/lib/constants/channel";
@@ -16,6 +17,8 @@ export function Tones() {
   );
 
   const activeTone = useToneStore((state) => state.activeTone);
+  const tonesIsloading = useToneStore((state) => state.tonesIsloading);
+
   const playTone = useToneStore((state) => state.playTone);
 
   const handleToneToggle = (tone: PadKey) => {
@@ -43,12 +46,17 @@ export function Tones() {
 
       <CardGrid>
         {MUSICAL_KEYS.map((tone, index) => (
-          <ToneCard
-            key={`tone-${tone}-${index}`}
-            tone={tone as PadKey}
-            active={activeTone === tone}
-            onToneToggle={() => handleToneToggle(tone as PadKey)}
-          />
+          <>
+            {tonesIsloading && <CardBaseSkeleton className="h-2 w-50" />}
+            {!tonesIsloading && (
+              <ToneCard
+                key={`tone-${tone}-${index}`}
+                tone={tone as PadKey}
+                active={activeTone === tone}
+                onToneToggle={() => handleToneToggle(tone as PadKey)}
+              />
+            )}
+          </>
         ))}
       </CardGrid>
     </div>
