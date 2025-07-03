@@ -15,7 +15,7 @@ export function ModalActiveHost() {
   );
 
   const remoteUrl = `${
-    import.meta.env.VITE_DOMIN_URL || "http://localhost:5173"
+    window.location.origin || "http://localhost:5173"
   }/?session=${roomId}`;
 
   return (
