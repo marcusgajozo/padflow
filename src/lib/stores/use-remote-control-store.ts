@@ -15,6 +15,7 @@ interface RemoteControlStoreActions {
   setChannelControl: (
     channelControl: RemoteControlStoreState["channelControl"]
   ) => void;
+  resetControl: () => void;
 }
 
 const INITIAL_STATE: RemoteControlStoreState = {
@@ -30,4 +31,5 @@ export const useRemoteControlStore = create<
   setIsRemoteControl: (isRemoteControl) => set(() => ({ isRemoteControl })),
   setRoomId: (roomId) => set(() => ({ roomId: roomId })),
   setChannelControl: (channelControl) => set(() => ({ channelControl })),
+  resetControl: () => set(() => ({ ...INITIAL_STATE })),
 }));

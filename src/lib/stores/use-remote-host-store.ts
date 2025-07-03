@@ -15,6 +15,7 @@ interface RemoteHostStoreActions {
   toggleStatusRemoteHost: () => void;
   incrementQuantityControllers: () => void;
   decrementQuantityControllers: () => void;
+  resetRemoteHost: () => void;
 }
 
 const INITIAL_STATE: RemoteHostStoreState = {
@@ -43,4 +44,5 @@ export const useRemoteHostStore = create<
     })),
   setRoomId: (roomId) => set(() => ({ roomId: roomId })),
   setChannelHost: (channelHost) => set(() => ({ channelHost })),
+  resetRemoteHost: () => set(() => ({ ...INITIAL_STATE })),
 }));
